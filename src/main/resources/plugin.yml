@@ -1,0 +1,6 @@
+name: EnderSkyGrid
+version: '1.0'
+main: br.com.enderfy.enderskygrid.EnderSkyGrid
+api-version: '1.21'
+load: STARTUP
+loadbefore: [Multiverse-Core]

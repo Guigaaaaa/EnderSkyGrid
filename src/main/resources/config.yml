@@ -1,0 +1,244 @@
+skygrid:
+  spacing: 4
+  min-y: -64
+  max-y: 100
+
+  overworld:
+    chest:
+      chance: 0.006
+
+      loot:
+        rolls:
+          min: 2
+          max: 5
+
+        entries:
+          - material: OAK_PLANKS
+            weight: 40
+            amount: { min: 8, max: 24 }
+
+          - material: COBBLESTONE
+            weight: 40
+            amount: { min: 12, max: 32 }
+
+          - material: TORCH
+            weight: 30
+            amount: { min: 4, max: 16 }
+
+          - material: BREAD
+            weight: 30
+            amount: { min: 2, max: 6 }
+
+          - material: COAL
+            weight: 28
+            amount: { min: 4, max: 16 }
+
+          - material: STRING
+            weight: 20
+            amount: { min: 2, max: 8 }
+
+          - material: IRON_INGOT
+            weight: 18
+            amount: { min: 2, max: 8 }
+
+          - material: BUCKET
+            weight: 8
+            amount: { min: 1, max: 1 }
+
+          - material: WATER_BUCKET
+            weight: 3
+            amount: { min: 1, max: 1 }
+
+          - material: LAVA_BUCKET
+            weight: 2
+            amount: { min: 1, max: 1 }
+
+          - material: OBSIDIAN
+            weight: 6
+            amount: { min: 1, max: 4 }
+
+          - material: GOLDEN_APPLE
+            weight: 6
+            amount: { min: 1, max: 2 }
+
+          - material: ENCHANTED_GOLDEN_APPLE
+            weight: 1
+            amount: { min: 1, max: 1 }
+
+          - material: DIAMOND
+            weight: 4
+            amount: { min: 1, max: 3 }
+
+          - material: DIAMOND_SWORD
+            weight: 2
+            amount: { min: 1, max: 1 }
+            name: "&bEspada Overworld"
+            enchants:
+              SHARPNESS: 3
+
+          - material: DIAMOND_PICKAXE
+            weight: 1
+            amount: { min: 1, max: 1 }
+            name: "&bPicareta Overworld"
+            enchants:
+              EFFICIENCY: 3
+              UNBREAKING: 2
+
+    spawner:
+      chance: 0.0025
+      mobs:
+        - ZOMBIE
+        - SKELETON
+        - SPIDER
+        - CREEPER
+
+    materials:
+      - DIRT
+      - GRASS_BLOCK
+      - STONE
+      - COBBLESTONE
+      - OAK_LOG
+      - OAK_LEAVES
+      - SAND
+      - GRAVEL
+      - CLAY
+      - COAL_ORE
+      - IRON_ORE
+
+
+  nether:
+    chest:
+      chance: 0.0055
+
+      loot:
+        rolls:
+          min: 2
+          max: 4
+
+        entries:
+          - material: NETHERRACK
+            weight: 45
+            amount: { min: 16, max: 48 }
+
+          - material: SOUL_SAND
+            weight: 20
+            amount: { min: 6, max: 20 }
+
+          - material: GLOWSTONE_DUST
+            weight: 18
+            amount: { min: 4, max: 18 }
+
+          - material: QUARTZ
+            weight: 18
+            amount: { min: 4, max: 20 }
+
+          - material: MAGMA_CREAM
+            weight: 10
+            amount: { min: 1, max: 6 }
+
+          - material: BLAZE_ROD
+            weight: 8
+            amount: { min: 1, max: 6 }
+
+          - material: NETHER_WART
+            weight: 10
+            amount: { min: 2, max: 10 }
+
+          - material: GHAST_TEAR
+            weight: 2
+            amount: { min: 1, max: 2 }
+
+          - material: FIRE_RESISTANCE_POTION
+            weight: 3
+            amount: { min: 1, max: 1 }
+
+          - material: ANCIENT_DEBRIS
+            weight: 1
+            amount: { min: 1, max: 1 }
+
+          - material: NETHERITE_SCRAP
+            weight: 2
+            amount: { min: 1, max: 2 }
+
+          - material: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+            weight: 1
+            amount: { min: 1, max: 1 }
+
+    spawner:
+      chance: 0.0022
+      mobs:
+        - ZOMBIFIED_PIGLIN
+        - MAGMA_CUBE
+        - BLAZE
+        - WITHER_SKELETON
+
+    materials:
+      - NETHERRACK
+      - SOUL_SAND
+      - BASALT
+      - BLACKSTONE
+      - NETHER_QUARTZ_ORE
+      - GLOWSTONE
+
+
+  end:
+    chest:
+      chance: 0.0048
+
+      loot:
+        rolls:
+          min: 2
+          max: 4
+
+        entries:
+          - material: END_STONE
+            weight: 45
+            amount: { min: 16, max: 48 }
+
+          - material: CHORUS_FRUIT
+            weight: 22
+            amount: { min: 4, max: 16 }
+
+          - material: PURPUR_BLOCK
+            weight: 18
+            amount: { min: 8, max: 24 }
+
+          - material: ENDER_PEARL
+            weight: 18
+            amount: { min: 4, max: 16 }
+
+          - material: SHULKER_SHELL
+            weight: 10
+            amount: { min: 1, max: 4 }
+
+          - material: ELYTRA
+            weight: 1
+            amount: { min: 1, max: 1 }
+
+          - material: DRAGON_BREATH
+            weight: 3
+            amount: { min: 1, max: 4 }
+
+          - material: EXPERIENCE_BOTTLE
+            weight: 10
+            amount: { min: 4, max: 16 }
+
+          - material: DIAMOND
+            weight: 4
+            amount: { min: 1, max: 3 }
+
+          - material: END_CRYSTAL
+            weight: 2
+            amount: { min: 1, max: 2 }
+
+    spawner:
+      chance: 0.0020
+      mobs:
+        - ENDERMAN
+        - SHULKER
+
+    materials:
+      - END_STONE
+      - PURPUR_BLOCK
+      - CHORUS_PLANT
+      - END_STONE_BRICKS
