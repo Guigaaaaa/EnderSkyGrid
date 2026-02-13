@@ -3,246 +3,790 @@ skygrid:
     - skygrid
     - skygrid_nether
     - skygrid_end
-  spacing: 4
-  min-y: -64
-  max-y: 100
 
   overworld:
-    chest:
-      chance: 0.006
-
-      loot:
-        rolls:
-          min: 2
-          max: 5
-
-        entries:
-          - material: OAK_PLANKS
-            weight: 40
-            amount: { min: 8, max: 24 }
-
-          - material: COBBLESTONE
-            weight: 40
-            amount: { min: 12, max: 32 }
-
-          - material: TORCH
-            weight: 30
-            amount: { min: 4, max: 16 }
-
-          - material: BREAD
-            weight: 30
-            amount: { min: 2, max: 6 }
-
-          - material: COAL
-            weight: 28
-            amount: { min: 4, max: 16 }
-
-          - material: STRING
-            weight: 20
-            amount: { min: 2, max: 8 }
-
-          - material: IRON_INGOT
-            weight: 18
-            amount: { min: 2, max: 8 }
-
-          - material: BUCKET
-            weight: 8
-            amount: { min: 1, max: 1 }
-
-          - material: WATER_BUCKET
-            weight: 3
-            amount: { min: 1, max: 1 }
-
-          - material: LAVA_BUCKET
-            weight: 2
-            amount: { min: 1, max: 1 }
-
-          - material: OBSIDIAN
-            weight: 6
-            amount: { min: 1, max: 4 }
-
-          - material: GOLDEN_APPLE
-            weight: 6
-            amount: { min: 1, max: 2 }
-
-          - material: ENCHANTED_GOLDEN_APPLE
-            weight: 1
-            amount: { min: 1, max: 1 }
-
-          - material: DIAMOND
-            weight: 4
-            amount: { min: 1, max: 3 }
-
-          - material: DIAMOND_SWORD
-            weight: 2
-            amount: { min: 1, max: 1 }
-            name: "&bEspada Overworld"
-            enchants:
-              SHARPNESS: 3
-
-          - material: DIAMOND_PICKAXE
-            weight: 1
-            amount: { min: 1, max: 1 }
-            name: "&bPicareta Overworld"
-            enchants:
-              EFFICIENCY: 3
-              UNBREAKING: 2
-
-    spawner:
-      chance: 0.0025
-      mobs:
-        - ZOMBIE
-        - SKELETON
-        - SPIDER
-        - CREEPER
-
-    materials:
-      - DIRT
-      - GRASS_BLOCK
-      - STONE
-      - COBBLESTONE
-      - OAK_LOG
-      - OAK_LEAVES
-      - SAND
-      - GRAVEL
-      - CLAY
-      - COAL_ORE
-      - IRON_ORE
-
-
+    spacing: 4
+    min-y: -64
+    max-y: 100
+    default-biome: PLAINS
+    biomes-material:
+      PLAINS:
+        - material: CHEST
+          weight: 0.5
+          loot-tables: [ overworld, overworld_rare ]
+        - material: SPAWNER
+          weight: 0.05
+          mobs: [ ZOMBIE:10, SKELETON:18, SPIDER:10, CREEPER:8 ]
+        - material: ACACIA_LEAVES
+          weight: 3
+        - material: ACACIA_LOG
+          weight: 1
+        - material: ALLIUM
+          weight: 2
+        - material: AMETHYST_BLOCK
+          weight: 1
+        - material: AMETHYST_CLUSTER
+          weight: 1
+        - material: ANDESITE
+          weight: 20
+        - material: AZALEA
+          weight: 1
+        - material: AZALEA_LEAVES
+          weight: 3
+        - material: AZURE_BLUET
+          weight: 2
+        - material: BAMBOO
+          weight: 2
+        - material: BEE_NEST
+          weight: 0.01
+        - material: BEETROOTS
+          weight: 1
+        - material: BELL
+          weight: 0.001
+        - material: BIRCH_LEAVES
+          weight: 3
+        - material: BIRCH_LOG
+          weight: 1
+        - material: BLUE_ORCHID
+          weight: 1
+        - material: BONE_BLOCK
+          weight: 1
+        - material: BOOKSHELF
+          weight: 1
+        - material: BRAIN_CORAL_BLOCK
+          weight: 0.5
+        - material: BROWN_MUSHROOM
+          weight: 2
+        - material: BUBBLE_CORAL_BLOCK
+          weight: 0.5
+        - material: BUDDING_AMETHYST
+          weight: 0.5
+        - material: BUSH
+          weight: 0.5
+        - material: CACTUS
+          weight: 2
+        - material: CACTUS_FLOWER
+          weight: 0.5
+        - material: CALCITE
+          weight: 2
+        - material: CARROTS
+          weight: 1
+        - material: CAVE_VINES
+          weight: 0.5
+        - material: COPPER_CHEST
+          weight: 1.5
+        - material: COPPER_LANTERN
+          weight: 0.3
+        - material: CHERRY_LEAVES
+          weight: 3
+        - material: CHISELED_COPPER
+          weight: 0.1
+        - material: CHISELED_STONE_BRICKS
+          weight: 0.5
+        - material: CLAY
+          weight: 20
+        - material: COAL_ORE
+          weight: 1.0
+        - material: COARSE_DIRT
+          weight: 5
+        - material: COBBLESTONE
+          weight: 12
+        - material: COBWEB
+          weight: 0.5
+        - material: COPPER_BULB
+          weight: 0.1
+        - material: COPPER_GRATE
+          weight: 0.1
+        - material: COPPER_ORE
+          weight: 0.5
+        - material: CORNFLOWER
+          weight: 0.5
+        - material: CRAFTER
+          weight: 0.05
+        - material: CREAKING_HEART
+          weight: 0.001
+        - material: CRYING_OBSIDIAN
+          weight: 0.5
+        - material: CUT_COPPER
+          weight: 0.1
+        - material: DANDELION
+          weight: 0.5
+        - material: DARK_OAK_LEAVES
+          weight: 3
+        - material: DARK_OAK_LOG
+          weight: 1
+        - material: DARK_PRISMARINE
+          weight: 2
+        - material: DEAD_BUSH
+          weight: 0.5
+        - material: DEEPSLATE
+          weight: 70
+        - material: DEEPSLATE_COAL_ORE
+          weight: 1.0
+        - material: DEEPSLATE_COPPER_ORE
+          weight: 0.5
+        - material: DEEPSLATE_DIAMOND_ORE
+          weight: 0.1
+        - material: DEEPSLATE_GOLD_ORE
+          weight: 0.25
+        - material: DEEPSLATE_IRON_ORE
+          weight: 1.0
+        - material: DEEPSLATE_LAPIS_ORE
+          weight: 0.25
+        - material: DEEPSLATE_REDSTONE_ORE
+          weight: 0.4
+        - material: DIAMOND_ORE
+          weight: 0.1
+        - material: DIORITE
+          weight: 20
+        - material: DIRT
+          weight: 70
+        - material: DRIPSTONE_BLOCK
+          weight: 3
+        - material: END_PORTAL
+          weight: 0.005
+        - material: FERN
+          weight: 1
+        - material: FIREFLY_BUSH
+          weight: 0.5
+        - material: FIRE_CORAL_BLOCK
+          weight: 0.5
+        - material: FLOWERING_AZALEA
+          weight: 0.5
+        - material: FLOWERING_AZALEA_LEAVES
+          weight: 3
+        - material: GLASS
+          weight: 1
+        - material: GLOW_LICHEN
+          weight: 0.5
+        - material: GOLD_BLOCK
+          weight: 0.1
+        - material: GOLD_ORE
+          weight: 0.25
+        - material: GRANITE
+          weight: 20
+        - material: GRASS_BLOCK
+          weight: 70
+        - material: GRAVEL
+          weight: 10
+        - material: HANGING_ROOTS
+          weight: 0.5
+        - material: HEAVY_CORE
+          weight: 0.05
+        - material: HORN_CORAL_BLOCK
+          weight: 0.5
+        - material: ICE
+          weight: 1
+        - material: INFESTED_DEEPSLATE
+          weight: 3
+        - material: IRON_ORE
+          weight: 1.0
+        - material: JUNGLE_LEAVES
+          weight: 3
+        - material: JUNGLE_LOG
+          weight: 1
+        - material: KELP_PLANT
+          weight: 1
+        - material: LAPIS_ORE
+          weight: 0.25
+        - material: LARGE_FERN
+          weight: 0.5
+        - material: LAVA
+          weight: 10
+        - material: LEAF_LITTER
+          weight: 0.5
+        - material: LILAC
+          weight: 0.5
+        - material: LILY_OF_THE_VALLEY
+          weight: 0.5
+        - material: LILY_PAD
+          weight: 0.5
+        - material: MANGROVE_LEAVES
+          weight: 3
+        - material: MANGROVE_LOG
+          weight: 1
+        - material: MANGROVE_ROOTS
+          weight: 1
+        - material: MANGROVE_WOOD
+          weight: 1
+        - material: MELON
+          weight: 5
+        - material: MOSS_BLOCK
+          weight: 1
+        - material: MOSSY_COBBLESTONE
+          weight: 5
+        - material: MOSSY_STONE_BRICKS
+          weight: 2
+        - material: MUD
+          weight: 8
+        - material: MUDDY_MANGROVE_ROOTS
+          weight: 4
+        - material: MYCELIUM
+          weight: 10
+        - material: OAK_LEAVES
+          weight: 3
+        - material: OAK_LOG
+          weight: 1
+        - material: OBSIDIAN
+          weight: 5
+        - material: OPEN_EYEBLOSSOM
+          weight: 0.05
+        - material: ORANGE_TULIP
+          weight: 0.5
+        - material: OXEYE_DAISY
+          weight: 0.5
+        - material: PACKED_ICE
+          weight: 2
+        - material: PALE_HANGING_MOSS
+          weight: 0.5
+        - material: PALE_MOSS_BLOCK
+          weight: 0.5
+        - material: PALE_MOSS_CARPET
+          weight: 0.5
+        - material: PALE_OAK_LEAVES
+          weight: 3
+        - material: PALE_OAK_LOG
+          weight: 1
+        - material: PEONY
+          weight: 0.5
+        - material: PINK_PETALS
+          weight: 0.5
+        - material: PINK_TULIP
+          weight: 0.5
+        - material: PISTON
+          weight: 0.1
+        - material: PODZOL
+          weight: 5
+        - material: POINTED_DRIPSTONE
+          weight: 1
+        - material: POPPY
+          weight: 0.5
+        - material: POTATOES
+          weight: 0.5
+        - material: PRISMARINE
+          weight: 1
+        - material: PUMPKIN
+          weight: 5
+        - material: RAW_COPPER_BLOCK
+          weight: 1.2
+        - material: RAW_IRON_BLOCK
+          weight: 1.2
+        - material: RED_MUSHROOM
+          weight: 2
+        - material: RED_SAND
+          weight: 5
+        - material: RED_SANDSTONE
+          weight: 3
+        - material: RED_TULIP
+          weight: 0.5
+        - material: REDSTONE_ORE
+          weight: 0.4
+        - material: RESIN_BLOCK
+          weight: 0.05
+        - material: ROOTED_DIRT
+          weight: 4
+        - material: ROSE_BUSH
+          weight: 0.5
+        - material: SAND
+          weight: 30
+        - material: SANDSTONE
+          weight: 10
+        - material: SCULK
+          weight: 0.3
+        - material: SCULK_CATALYST
+          weight: 0.05
+        - material: SCULK_SENSOR
+          weight: 0.05
+        - material: SCULK_SHRIEKER
+          weight: 0.02
+        - material: SCULK_VEIN
+          weight: 0.3
+        - material: SEA_LANTERN
+          weight: 1
+        - material: SEA_PICKLE
+          weight: 1
+        - material: SEAGRASS
+          weight: 0.5
+        - material: SHORT_DRY_GRASS
+          weight: 0.5
+        - material: SHORT_GRASS
+          weight: 0.5
+        - material: SMALL_DRIPLEAF
+          weight: 0.5
+        - material: SMOOTH_BASALT
+          weight: 2
+        - material: SNOW_BLOCK
+          weight: 10
+        - material: SPONGE
+          weight: 0.08
+        - material: SPORE_BLOSSOM
+          weight: 0.5
+        - material: SPRUCE_LEAVES
+          weight: 3
+        - material: SPRUCE_LOG
+          weight: 1
+        - material: STICKY_PISTON
+          weight: 0.08
+        - material: STONE
+          weight: 140
+        - material: STONE_BRICKS
+          weight: 2
+        - material: SUGAR_CANE
+          weight: 5
+        - material: SUNFLOWER
+          weight: 0.5
+        - material: SUSPICIOUS_GRAVEL
+          weight: 10
+        - material: SWEET_BERRY_BUSH
+          weight: 0.5
+        - material: TARGET
+          weight: 0.05
+        - material: TNT
+          weight: 0.05
+        - material: TRIAL_SPAWNER
+          weight: 0.001
+        - material: TUBE_CORAL_BLOCK
+          weight: 0.5
+        - material: TUFF
+          weight: 20
+        - material: OAK_SHELF
+          weight: 0.3
+        - material: VAULT
+          weight: 0.01
+        - material: WATER
+          weight: 10
+        - material: WHEAT
+          weight: 1
+        - material: WHITE_CONCRETE_POWDER
+          weight: 0.5
+        - material: WHITE_TULIP
+          weight: 0.5
+        - material: WHITE_WOOL
+          weight: 0.5
+        - material: WILDFLOWERS
+          weight: 0.5
+        - material: WITHER_ROSE
+          weight: 0.05
   nether:
-    chest:
-      chance: 0.0055
+    spacing: 4
+    min-y: -64
+    max-y: 100
+    default-biome: NETHER_WASTES
+    biomes-material:
 
-      loot:
-        rolls:
-          min: 2
-          max: 4
+      NETHER_WASTES:
+        - material: CHEST
+          weight: 5
+          loot-tables: [nether]
+        - material: SPAWNER
+          weight: 0.01
+          mobs: [ZOMBIFIED_PIGLIN:12, BLAZE:10, WITHER_SKELETON:6]
+        - material: ANCIENT_DEBRIS
+          weight: 0.1
+        - material: BASALT
+          weight: 20
+        - material: BLACKSTONE
+          weight: 60
+        - material: BONE_BLOCK
+          weight: 5
+        - material: CRIMSON_FUNGUS
+          weight: 6
+        - material: CRIMSON_HYPHAE
+          weight: 6
+        - material: CRIMSON_NYLIUM
+          weight: 60
+        - material: CRIMSON_ROOTS
+          weight: 6
+        - material: CRIMSON_STEM
+          weight: 10
+        - material: CRYING_OBSIDIAN
+          weight: 2
+        - material: GILDED_BLACKSTONE
+          weight: 4
+        - material: GLOWSTONE
+          weight: 3
+        - material: GRAVEL
+          weight: 30
+        - material: LAVA
+          weight: 50
+        - material: MAGMA_BLOCK
+          weight: 50
+        - material: NETHER_BRICKS
+          weight: 30
+        - material: NETHER_GOLD_ORE
+          weight: 6
+        - material: NETHER_QUARTZ_ORE
+          weight: 15
+        - material: NETHER_SPROUTS
+          weight: 7
+        - material: NETHER_WART
+          weight: 30
+        - material: NETHER_WART_BLOCK
+          weight: 6
+        - material: NETHERRACK
+          weight: 600
+        - material: OBSIDIAN
+          weight: 5
+        - material: OCHRE_FROGLIGHT
+          weight: 4
+        - material: PEARLESCENT_FROGLIGHT
+          weight: 4
+        - material: POLISHED_BLACKSTONE
+          weight: 6
+        - material: POLISHED_BLACKSTONE_BRICKS
+          weight: 4
+        - material: SHROOMLIGHT
+          weight: 5
+        - material: SOUL_FIRE
+          weight: 5
+        - material: SOUL_SAND
+          weight: 10
+        - material: SOUL_SOIL
+          weight: 100
+        - material: TWISTING_VINES
+          weight: 5
+        - material: VERDANT_FROGLIGHT
+          weight: 4
+        - material: WARPED_FUNGUS
+          weight: 6
+        - material: WARPED_HYPHAE
+          weight: 6
+        - material: WARPED_NYLIUM
+          weight: 60
+        - material: WARPED_ROOTS
+          weight: 6
+        - material: WARPED_STEM
+          weight: 10
+        - material: WARPED_WART_BLOCK
+          weight: 10
 
-        entries:
-          - material: NETHERRACK
-            weight: 45
-            amount: { min: 16, max: 48 }
-
-          - material: SOUL_SAND
-            weight: 20
-            amount: { min: 6, max: 20 }
-
-          - material: GLOWSTONE_DUST
-            weight: 18
-            amount: { min: 4, max: 18 }
-
-          - material: QUARTZ
-            weight: 18
-            amount: { min: 4, max: 20 }
-
-          - material: MAGMA_CREAM
-            weight: 10
-            amount: { min: 1, max: 6 }
-
-          - material: BLAZE_ROD
-            weight: 8
-            amount: { min: 1, max: 6 }
-
-          - material: NETHER_WART
-            weight: 10
-            amount: { min: 2, max: 10 }
-
-          - material: GHAST_TEAR
-            weight: 2
-            amount: { min: 1, max: 2 }
-
-          - material: FIRE_RESISTANCE_POTION
-            weight: 3
-            amount: { min: 1, max: 1 }
-
-          - material: ANCIENT_DEBRIS
-            weight: 1
-            amount: { min: 1, max: 1 }
-
-          - material: NETHERITE_SCRAP
-            weight: 2
-            amount: { min: 1, max: 2 }
-
-          - material: NETHERITE_UPGRADE_SMITHING_TEMPLATE
-            weight: 1
-            amount: { min: 1, max: 1 }
-
-    spawner:
-      chance: 0.0022
-      mobs:
-        - ZOMBIFIED_PIGLIN
-        - MAGMA_CUBE
-        - BLAZE
-        - WITHER_SKELETON
-
-    materials:
-      - NETHERRACK
-      - SOUL_SAND
-      - BASALT
-      - BLACKSTONE
-      - NETHER_QUARTZ_ORE
-      - GLOWSTONE
-
+      SOUL_SAND_VALLEY:
+        - material: CHEST
+          weight: 5
+          loot-tables: [ nether ]
+        - material: SPAWNER
+          weight: 0.01
+          mobs: [ SKELETON:18, WITHER_SKELETON:10, GHAST:4 ]
+        - material: ANCIENT_DEBRIS
+          weight: 0.1
+        - material: BASALT
+          weight: 20
+        - material: BLACKSTONE
+          weight: 60
+        - material: BONE_BLOCK
+          weight: 5
+        - material: CHEST
+          weight: 10
+        - material: CRYING_OBSIDIAN
+          weight: 2
+        - material: GILDED_BLACKSTONE
+          weight: 4
+        - material: GLOWSTONE
+          weight: 3
+        - material: GRAVEL
+          weight: 30
+        - material: LAVA
+          weight: 50
+        - material: MAGMA_BLOCK
+          weight: 50
+        - material: NETHER_BRICKS
+          weight: 30
+        - material: NETHER_GOLD_ORE
+          weight: 6
+        - material: NETHER_QUARTZ_ORE
+          weight: 15
+        - material: NETHER_SPROUTS
+          weight: 7
+        - material: NETHER_WART
+          weight: 30
+        - material: NETHERRACK
+          weight: 60
+        - material: OBSIDIAN
+          weight: 5
+        - material: OCHRE_FROGLIGHT
+          weight: 4
+        - material: PEARLESCENT_FROGLIGHT
+          weight: 4
+        - material: POLISHED_BLACKSTONE
+          weight: 6
+        - material: POLISHED_BLACKSTONE_BRICKS
+          weight: 4
+        - material: SHROOMLIGHT
+          weight: 5
+        - material: SOUL_FIRE
+          weight: 5
+        - material: SOUL_SAND
+          weight: 150
+        - material: SOUL_SOIL
+          weight: 600
+        - material: SPAWNER
+          weight: 0.01
+        - material: TWISTING_VINES
+          weight: 5
+        - material: VERDANT_FROGLIGHT
+          weight: 4
 
   end:
-    chest:
-      chance: 0.0048
+    spacing: 4
+    min-y: -64
+    max-y: 100
+    default-biome: THE_END
+    biomes-material:
 
-      loot:
-        rolls:
-          min: 2
-          max: 4
+      THE_END:
+        - material: CHEST
+          weight: 0.2
+          loot-tables: [ end ]
+        - material: SPAWNER
+          weight: 0.005
+          mobs: [ ENDERMAN:14, SHULKER:20 ]
+        - material: BREWING_STAND
+          weight: 0.1
+        - material: CHORUS_FLOWER
+          weight: 5
+        - material: END_ROD
+          weight: 10
+        - material: END_STONE
+          weight: 60
+        - material: END_STONE_BRICKS
+          weight: 5
+        - material: ENDER_CHEST
+          weight: 0.01
+        - material: OBSIDIAN
+          weight: 10
+        - material: PURPLE_STAINED_GLASS
+          weight: 5
+        - material: PURPUR_BLOCK
+          weight: 5
+        - material: PURPUR_PILLAR
+          weight: 5
+        - material: PURPUR_STAIRS
+          weight: 5
 
-        entries:
-          - material: END_STONE
-            weight: 45
-            amount: { min: 16, max: 48 }
+      END_HIGHLANDS:
+        - material: CHEST
+          weight: 0.2
+          loot-tables: [ end, end_rare ]
+        - material: SPAWNER
+          weight: 0.005
+          mobs: [ ENDERMAN:14, SHULKER:18 ]
+        - material: BREWING_STAND
+          weight: 0.1
+        - material: CHORUS_FLOWER
+          weight: 5
+        - material: END_ROD
+          weight: 20
+        - material: END_STONE
+          weight: 60
+        - material: END_STONE_BRICKS
+          weight: 5
+        - material: ENDER_CHEST
+          weight: 0.1
+        - material: PURPLE_STAINED_GLASS
+          weight: 15
+        - material: PURPUR_BLOCK
+          weight: 15
+        - material: PURPUR_PILLAR
+          weight: 15
+        - material: PURPUR_STAIRS
+          weight: 15
 
-          - material: CHORUS_FRUIT
-            weight: 22
-            amount: { min: 4, max: 16 }
+  loottables:
+    overworld:
+      weight: 1
+      rolls:
+        min: 2
+        max: 5
+      entries:
+        - material: OAK_PLANKS
+          weight: 40
+          amount: { min: 8, max: 24 }
+        - material: COBBLESTONE
+          weight: 40
+          amount: { min: 12, max: 32 }
+        - material: TORCH
+          weight: 30
+          amount: { min: 4, max: 16 }
+        - material: BREAD
+          weight: 30
+          amount: { min: 2, max: 6 }
+        - material: COAL
+          weight: 28
+          amount: { min: 4, max: 16 }
+        - material: STRING
+          weight: 20
+          amount: { min: 2, max: 8 }
+        - material: IRON_INGOT
+          weight: 18
+          amount: { min: 2, max: 8 }
+        - material: ARROW
+          weight: 14
+          amount: { min: 6, max: 24 }
+        - material: BONE
+          weight: 14
+          amount: { min: 4, max: 16 }
+        - material: BUCKET
+          weight: 8
+          amount: { min: 1, max: 1 }
+        - material: WATER_BUCKET
+          weight: 3
+          amount: { min: 1, max: 1 }
+        - material: LAVA_BUCKET
+          weight: 2
+          amount: { min: 1, max: 1 }
+        - material: OBSIDIAN
+          weight: 6
+          amount: { min: 1, max: 4 }
+        - material: GOLDEN_APPLE
+          weight: 6
+          amount: { min: 1, max: 2 }
+        - material: ENCHANTED_GOLDEN_APPLE
+          weight: 1
+          amount: { min: 1, max: 1 }
+        - material: DIAMOND
+          weight: 4
+          amount: { min: 1, max: 3 }
+        - material: DIAMOND_SWORD
+          weight: 2
+          amount: { min: 1, max: 1 }
+          enchants:
+            SHARPNESS: 3
+        - material: DIAMOND_PICKAXE
+          weight: 1
+          amount: { min: 1, max: 1 }
+          enchants:
+            EFFICIENCY: 3
+            UNBREAKING: 2
 
-          - material: PURPUR_BLOCK
-            weight: 18
-            amount: { min: 8, max: 24 }
+    overworld_rare:
+      weight: 1
+      rolls:
+        min: 1
+        max: 2
+      entries:
+        - material: DIAMOND
+          weight: 10
+          amount: { min: 1, max: 2 }
+        - material: EMERALD
+          weight: 8
+          amount: { min: 1, max: 3 }
+        - material: ENCHANTING_TABLE
+          weight: 2
+          amount: { min: 1, max: 1 }
+        - material: EXPERIENCE_BOTTLE
+          weight: 16
+          amount: { min: 4, max: 16 }
+        - material: GOLDEN_APPLE
+          weight: 10
+          amount: { min: 1, max: 2 }
+        - material: TRIDENT
+          weight: 1
+          amount: { min: 1, max: 1 }
+        - material: DIAMOND_CHESTPLATE
+          weight: 1
+          amount: { min: 1, max: 1 }
+          enchants:
+            PROTECTION: 3
+            UNBREAKING: 2
 
-          - material: ENDER_PEARL
-            weight: 18
-            amount: { min: 4, max: 16 }
+    nether:
+      weight: 1
+      rolls:
+        min: 2
+        max: 4
+      entries:
+        - material: NETHERRACK
+          weight: 45
+          amount: { min: 16, max: 48 }
+        - material: SOUL_SAND
+          weight: 20
+          amount: { min: 6, max: 20 }
+        - material: GLOWSTONE_DUST
+          weight: 18
+          amount: { min: 4, max: 18 }
+        - material: QUARTZ
+          weight: 18
+          amount: { min: 4, max: 20 }
+        - material: MAGMA_CREAM
+          weight: 10
+          amount: { min: 1, max: 6 }
+        - material: BLAZE_ROD
+          weight: 8
+          amount: { min: 1, max: 6 }
+        - material: NETHER_WART
+          weight: 10
+          amount: { min: 2, max: 10 }
+        - material: GOLD_INGOT
+          weight: 8
+          amount: { min: 1, max: 6 }
+        - material: GHAST_TEAR
+          weight: 2
+          amount: { min: 1, max: 2 }
+        - material: ANCIENT_DEBRIS
+          weight: 1
+          amount: { min: 1, max: 1 }
+        - material: NETHERITE_SCRAP
+          weight: 2
+          amount: { min: 1, max: 2 }
+        - material: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+          weight: 1
+          amount: { min: 1, max: 1 }
 
-          - material: SHULKER_SHELL
-            weight: 10
-            amount: { min: 1, max: 4 }
+    end:
+      weight: 1
+      rolls:
+        min: 2
+        max: 4
+      entries:
+        - material: END_STONE
+          weight: 45
+          amount: { min: 16, max: 48 }
+        - material: CHORUS_FRUIT
+          weight: 22
+          amount: { min: 4, max: 16 }
+        - material: PURPUR_BLOCK
+          weight: 18
+          amount: { min: 8, max: 24 }
+        - material: ENDER_PEARL
+          weight: 18
+          amount: { min: 4, max: 16 }
+        - material: SHULKER_SHELL
+          weight: 10
+          amount: { min: 1, max: 4 }
+        - material: ELYTRA
+          weight: 1
+          amount: { min: 1, max: 1 }
+        - material: DRAGON_BREATH
+          weight: 3
+          amount: { min: 1, max: 4 }
+        - material: EXPERIENCE_BOTTLE
+          weight: 10
+          amount: { min: 4, max: 16 }
+        - material: DIAMOND
+          weight: 4
+          amount: { min: 1, max: 3 }
+        - material: END_CRYSTAL
+          weight: 2
+          amount: { min: 1, max: 2 }
 
-          - material: ELYTRA
-            weight: 1
-            amount: { min: 1, max: 1 }
-
-          - material: DRAGON_BREATH
-            weight: 3
-            amount: { min: 1, max: 4 }
-
-          - material: EXPERIENCE_BOTTLE
-            weight: 10
-            amount: { min: 4, max: 16 }
-
-          - material: DIAMOND
-            weight: 4
-            amount: { min: 1, max: 3 }
-
-          - material: END_CRYSTAL
-            weight: 2
-            amount: { min: 1, max: 2 }
-
-    spawner:
-      chance: 0.0020
-      mobs:
-        - ENDERMAN
-        - SHULKER
-
-    materials:
-      - END_STONE
-      - PURPUR_BLOCK
-      - CHORUS_PLANT
-      - END_STONE_BRICKS
+    end_rare:
+      weight: 1
+      rolls:
+        min: 1
+        max: 2
+      entries:
+        - material: ELYTRA
+          weight: 2
+          amount: { min: 1, max: 1 }
+        - material: SHULKER_BOX
+          weight: 6
+          amount: { min: 1, max: 1 }
+        - material: NETHERITE_INGOT
+          weight: 1
+          amount: { min: 1, max: 1 }
+        - material: DIAMOND
+          weight: 10
+          amount: { min: 1, max: 2 }
+        - material: EXPERIENCE_BOTTLE
+          weight: 20
+          amount: { min: 8, max: 32 }

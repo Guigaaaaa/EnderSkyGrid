@@ -1,12 +1,11 @@
 package br.com.enderfy.enderskygrid.config;
 
 import br.com.enderfy.enderskygrid.EnderSkyGrid;
-import br.com.enderfy.enderskygrid.model.LootEntry;
-import br.com.enderfy.enderskygrid.model.LootTable;
-import br.com.enderfy.enderskygrid.model.SkyGridConfig;
-import br.com.enderfy.enderskygrid.model.WorldSettings;
+import br.com.enderfy.enderskygrid.model.*;
 import br.com.enderfy.enderskygrid.utils.TextUtils;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -26,35 +25,98 @@ public class ConfigManager {
     public static void load() {
         FileConfiguration config = EnderSkyGrid.get().getConfig();
 
-        int spacing = config.getInt("skygrid.spacing", 4);
-        int minY = config.getInt("skygrid.min-y", -64);
-        int maxY = config.getInt("skygrid.max-y", 100);
         List<String> worlds = config.getStringList("skygrid.enabled-worlds");
 
-        WorldSettings overworld = loadWorld(config, "skygrid.overworld");
-        WorldSettings nether = loadWorld(config, "skygrid.nether");
-        WorldSettings end = loadWorld(config, "skygrid.end");
+        WorldSettings overworld = loadWorld(config, "skygrid.overworld", Biome.PLAINS);
+        WorldSettings nether = loadWorld(config, "skygrid.nether", Biome.NETHER_WASTES);
+        WorldSettings end = loadWorld(config, "skygrid.end", Biome.THE_END);
 
-        skygridConfig = new SkyGridConfig(spacing, minY, maxY, worlds, overworld, nether, end);
+        Map<String, LootTableDef> lootTables = loadLootTables(config, "skygrid.loottables");
+
+        skygridConfig = new SkyGridConfig(worlds, overworld, nether, end, lootTables);
     }
 
-    private static WorldSettings loadWorld(FileConfiguration c, String path) {
-        double chestChance = c.getDouble(path + ".chest.chance", 0.002);
-        double spawnerChance = c.getDouble(path + ".spawner.chance", 0.0002);
+    private static WorldSettings loadWorld(FileConfiguration config, String path, Biome fallbackDefaultBiome) {
+        int spacing = clamp(config.getInt(path + ".spacing", 4), 1, 128);
+        int minY = config.getInt(path + ".min-y", -64);
+        int maxY = config.getInt(path + ".max-y", 100);
 
-        LootTable loot = loadLootTable(c, path + ".chest.loot");
+        Biome defaultBiome = tryGetBiome(config.getString(path + ".default-biome", fallbackDefaultBiome.name()));
+        if (defaultBiome == null) defaultBiome = fallbackDefaultBiome;
 
-        List<EntityType> mobs = loadMobsSafe(c.getStringList(path + ".spawner.mobs"));
-        List<Material> materials = loadMaterialsSafe(c.getStringList(path + ".materials"));
+        Map<Biome, List<GridEntry>> byBiome = new HashMap<>();
 
-        return new WorldSettings(chestChance, loot, spawnerChance, mobs, materials);
+        ConfigurationSection section = config.getConfigurationSection(path + ".biomes-material");
+        if (section != null) {
+            for (String rawBiome : section.getKeys(false)) {
+                Biome biome = tryGetBiome(rawBiome);
+                if (biome == null) {
+                    EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Invalid biome key: " + rawBiome + " at " + path + ".biomes-material");
+                    continue;
+                }
+
+                List<Map<?, ?>> list = config.getMapList(path + ".biomes-material." + rawBiome);
+                List<GridEntry> entries = loadGridEntriesSafe(list, path + ".biomes-material." + rawBiome);
+                if (!entries.isEmpty()) byBiome.put(biome, entries);
+            }
+        }
+
+        if (byBiome.isEmpty()) {
+            EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Biomes keys empty at " + path + ".biomes-material");
+        }
+
+        return new WorldSettings(spacing, minY, maxY, defaultBiome, byBiome);
     }
 
-    private static LootTable loadLootTable(FileConfiguration c, String path) {
-        int minRolls = clamp(c.getInt(path + ".rolls.min", 1), 0, 64);
-        int maxRolls = clamp(c.getInt(path + ".rolls.max", minRolls), minRolls, 64);
+    private static List<GridEntry> loadGridEntriesSafe(List<Map<?, ?>> raw, String path) {
+        List<GridEntry> out = new ArrayList<>();
+        if (raw == null || raw.isEmpty()) return out;
 
-        List<Map<?, ?>> raw = c.getMapList(path + ".entries");
+        for (Map<?, ?> mat : raw) {
+            Object matObj = mat.get("material");
+            String rawMat = (matObj == null) ? "DIRT" : String.valueOf(matObj);
+            Material material = Material.matchMaterial(rawMat);
+
+            if (material == null || material.isAir() || !material.isBlock()) {
+                EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Invalid block material: " + rawMat + " at " + path);
+                continue;
+            }
+
+            double weight = toDouble(mat.get("weight"), -1);
+            if (weight <= 0) continue;
+
+            List<String> lootTables = toStringList(mat.get("loot-tables"));
+            Map<EntityType, Integer> mobs = parseMobWeights(toStringList(mat.get("mobs")), path);
+
+            out.add(new GridEntry(material, weight, lootTables, mobs));
+        }
+
+        return List.copyOf(out);
+    }
+
+    private static Map<String, LootTableDef> loadLootTables(FileConfiguration config, String path) {
+        Map<String, LootTableDef> out = new HashMap<>();
+
+        ConfigurationSection section = config.getConfigurationSection(path);
+        if (section == null) return Map.of();
+
+        for (String key : section.getKeys(false)) {
+            String p = path + "." + key;
+
+            int tableWeight = clamp(config.getInt(p + ".weight", 1), 0, 1_000_000);
+            LootTable loot = loadLootTable(config, p);
+
+            out.put(key, new LootTableDef(tableWeight, loot));
+        }
+
+        return Map.copyOf(out);
+    }
+
+    private static LootTable loadLootTable(FileConfiguration config, String path) {
+        int minRolls = clamp(config.getInt(path + ".rolls.min", 1), 0, 64);
+        int maxRolls = clamp(config.getInt(path + ".rolls.max", minRolls), minRolls, 64);
+
+        List<Map<?, ?>> raw = config.getMapList(path + ".entries");
         if (raw.isEmpty()) return new LootTable(0, 0, List.of());
 
         List<LootEntry> entries = new ArrayList<>();
@@ -73,6 +135,7 @@ public class ConfigManager {
 
             int minAmount = 1;
             int maxAmount = 1;
+
             Object amountObj = m.get("amount");
             if (amountObj instanceof Map<?, ?> a) {
                 minAmount = clamp(toInt(a.get("min"), 1), 1, 64);
@@ -97,8 +160,8 @@ public class ConfigManager {
                 }
 
                 Object enchants = m.get("enchants");
-                if (enchants instanceof Map<?, ?> enchMap) {
-                    for (Map.Entry<?, ?> e : enchMap.entrySet()) {
+                if (enchants instanceof Map<?, ?> enchantMap) {
+                    for (Map.Entry<?, ?> e : enchantMap.entrySet()) {
                         String rawEnchantment = String.valueOf(e.getKey()).toUpperCase(Locale.ROOT);
                         int level = toInt(e.getValue(), 1);
 
@@ -116,45 +179,62 @@ public class ConfigManager {
         return new LootTable(minRolls, maxRolls, entries);
     }
 
-    private static List<EntityType> loadMobsSafe(List<String> rawMobs) {
-        List<EntityType> mobs = new ArrayList<>();
-        if (rawMobs == null) return mobs;
+    private static Map<EntityType, Integer> parseMobWeights(List<String> raw, String path) {
+        Map<EntityType, Integer> mobs = new HashMap<>();
+        if (raw == null) return mobs;
 
-        for (String rawMob : rawMobs) {
-            if (rawMob == null) continue;
+        for (String rawMob : raw) {
+            if (rawMob == null || rawMob.isBlank()) continue;
+
+            String[] parts = rawMob.split(":", 2);
+            String rawType = parts[0].trim();
+
+            EntityType type;
             try {
-                mobs.add(EntityType.valueOf(rawMob.toUpperCase(Locale.ROOT)));
+                type = EntityType.valueOf(rawType.toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException ex) {
-                EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Invalid mob type: " + rawMob);
-            }
-        }
-        return List.copyOf(mobs);
-    }
-
-    private static List<Material> loadMaterialsSafe(List<String> rawMaterials) {
-        List<Material> materials = new ArrayList<>();
-        if (rawMaterials == null) return materials;
-
-        for (String rawMaterial : rawMaterials) {
-            if (rawMaterial == null) continue;
-
-            Material mat = Material.matchMaterial(rawMaterial);
-            if (mat == null || !mat.isBlock() || mat.isAir()) {
-                EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Invalid block material: " + rawMaterial);
+                EnderSkyGrid.get().getLogger().warning("[EnderSkyGrid] Invalid mob type: " + rawType + " at " + path);
                 continue;
             }
-            materials.add(mat);
+
+            int weight = 1;
+            if (parts.length == 2) weight = clamp(toInt(parts[1].trim(), 1), 0, 1_000_000);
+            if (weight <= 0) continue;
+
+            mobs.put(type, weight);
         }
-        return List.copyOf(materials);
+
+        return Map.copyOf(mobs);
     }
 
-    private static int toInt(Object o, int def) {
-        if (o instanceof Number n) return n.intValue();
-        try { return Integer.parseInt(String.valueOf(o)); }
+    private static List<String> toStringList(Object object) {
+        if (object == null) return List.of();
+        if (object instanceof List<?> list) return list.stream().map(String::valueOf).toList();
+        return List.of(String.valueOf(object));
+    }
+
+    private static int toInt(Object object, int def) {
+        if (object instanceof Number number) return number.intValue();
+        try { return Integer.parseInt(String.valueOf(object)); }
         catch (Exception ignored) { return def; }
     }
 
-    private static int clamp(int v, int min, int max) {
-        return Math.max(min, Math.min(max, v));
+    private static double toDouble(Object object, double def) {
+        if (object instanceof Number number) return number.doubleValue();
+        try { return Double.parseDouble(String.valueOf(object)); }
+        catch (Exception ignored) { return def; }
+    }
+
+    private static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public static Biome tryGetBiome(String biomeName) {
+        if (biomeName == null) return null;
+        try {
+            return Biome.valueOf(biomeName.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

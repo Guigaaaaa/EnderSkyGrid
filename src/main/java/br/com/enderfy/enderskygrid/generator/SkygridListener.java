@@ -1,10 +1,10 @@
 package br.com.enderfy.enderskygrid.generator;
 
-import br.com.enderfy.enderskygrid.config.ConfigManager;
-import br.com.enderfy.enderskygrid.model.SkyGridConfig;
-import br.com.enderfy.enderskygrid.model.WorldSettings;
 import br.com.enderfy.enderskygrid.EnderSkyGrid;
+import br.com.enderfy.enderskygrid.config.ConfigManager;
+import br.com.enderfy.enderskygrid.model.*;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.CreatureSpawner;
@@ -25,6 +25,7 @@ public class SkygridListener implements Listener {
 
     private final NamespacedKey chestPendingKey = new NamespacedKey(EnderSkyGrid.get(), "skygrid_chest_pending");
     private final NamespacedKey chestSeedKey = new NamespacedKey(EnderSkyGrid.get(), "skygrid_chest_seed");
+    private final NamespacedKey chestLootPoolKey = new NamespacedKey(EnderSkyGrid.get(), "skygrid_chest_loot_pool");
 
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
@@ -35,14 +36,15 @@ public class SkygridListener implements Listener {
 
         Chunk chunk = event.getChunk();
         World world = chunk.getWorld();
-        WorldSettings settings = getSettings(world, config);
 
         if (!config.worlds().contains(world.getName())) return;
 
-        int spacing = Math.max(1, config.spacing());
+        WorldSettings settings = getSettings(world, config);
 
-        int minY = Math.max(config.minY(), world.getMinHeight());
-        int maxY = Math.min(config.maxY(), world.getMaxHeight() - 1);
+        int spacing = Math.max(1, settings.spacing());
+
+        int minY = Math.max(settings.minY(), world.getMinHeight());
+        int maxY = Math.min(settings.maxY(), world.getMaxHeight() - 1);
         if (minY > maxY) return;
 
         int baseX = chunk.getX() << 4;
@@ -62,35 +64,47 @@ public class SkygridListener implements Listener {
                     Block block = world.getBlockAt(wx, y, wz);
 
                     if (block.getType() == Material.CHEST) {
-                        markChestPending(block, world.getSeed(), wx, y, wz);
+                        Biome biome = world.getBiome(wx, y, wz);
+                        List<GridEntry> palette = paletteFor(biome, settings);
+
+                        List<String> pool = resolveChestLootPool(palette, config, world.getEnvironment());
+                        markChestPending(block, world.getSeed(), wx, y, wz, pool);
                     } else if (block.getType() == Material.SPAWNER) {
-                        configureSpawnerNow(block, settings, world.getSeed(), wx, y, wz);
+                        Biome biome = world.getBiome(wx, y, wz);
+                        List<GridEntry> palette = paletteFor(biome, settings);
+
+                        Map<EntityType, Integer> mobs = resolveSpawnerMobs(palette);
+                        configureSpawnerNow(block, world.getSeed(), wx, y, wz, mobs);
                     }
                 }
             }
         }
     }
 
-    private void markChestPending(Block block, long worldSeed, int x, int y, int z) {
+    private void markChestPending(Block block, long worldSeed, int x, int y, int z, List<String> lootPool) {
         if (!(block.getState() instanceof Chest chest)) return;
 
         PersistentDataContainer pdc = chest.getPersistentDataContainer();
         pdc.set(chestPendingKey, PersistentDataType.BYTE, (byte) 1);
-
         pdc.set(chestSeedKey, PersistentDataType.LONG, mix(worldSeed, x, y, z));
+
+        if (lootPool != null && !lootPool.isEmpty()) {
+            pdc.set(chestLootPoolKey, PersistentDataType.STRING, String.join(",", lootPool));
+        }
 
         chest.update(true, false);
     }
 
-    private void configureSpawnerNow(Block block, WorldSettings settings, long seed, int x, int y, int z) {
+    private void configureSpawnerNow(Block block, long seed, int x, int y, int z, Map<EntityType, Integer> mobWeights) {
         if (!(block.getState() instanceof CreatureSpawner spawner)) return;
 
-        Random r = new Random(mix(seed, x, y, z));
+        if (mobWeights == null || mobWeights.isEmpty()) return;
 
-        List<EntityType> mobs = settings.spawnerMobs();
-        if (mobs == null || mobs.isEmpty()) return;
+        Random random = new Random(mix(seed, x, y, z));
+        EntityType picked = pickWeightedMob(mobWeights, random);
+        if (picked == null) return;
 
-        spawner.setSpawnedType(mobs.get(r.nextInt(mobs.size())));
+        spawner.setSpawnedType(picked);
         spawner.update(true, false);
     }
 
@@ -106,39 +120,135 @@ public class SkygridListener implements Listener {
         Byte pending = pdc.get(chestPendingKey, PersistentDataType.BYTE);
         if (pending == null || pending != (byte) 1) return;
 
-        SkyGridConfig config = ConfigManager.get();
-        if (config == null) return;
-
-        World world = chest.getWorld();
-        WorldSettings settings = getSettings(world, config);
+        SkyGridConfig cfg = ConfigManager.get();
+        if (cfg == null) return;
 
         long seed = Optional.ofNullable(pdc.get(chestSeedKey, PersistentDataType.LONG))
-                .orElse(mix(world.getSeed(), chest.getX(), chest.getY(), chest.getZ()));
+                .orElse(mix(chest.getWorld().getSeed(), chest.getX(), chest.getY(), chest.getZ()));
+
+        String poolRaw = pdc.get(chestLootPoolKey, PersistentDataType.STRING);
+        List<String> pool = (poolRaw == null || poolRaw.isBlank())
+                ? defaultPoolFor(chest.getWorld().getEnvironment())
+                : Arrays.stream(poolRaw.split(",")).map(String::trim).filter(s -> !s.isBlank()).toList();
 
         pdc.remove(chestPendingKey);
         pdc.remove(chestSeedKey);
+        pdc.remove(chestLootPoolKey);
         chest.update();
 
-        var loot = settings.chestLoot();
-        if (loot == null) return;
-
-        Random r = new Random(seed);
+        LootTable table = pickLootTableFromPool(cfg, pool, new Random(seed));
+        if (table == null) return;
 
         Inventory inv = chest.getBlockInventory();
         inv.clear();
 
-        List<ItemStack> drops = loot.roll(r);
+        Random random = new Random(seed);
+
+        List<ItemStack> drops = table.roll(random);
         if (drops.isEmpty()) return;
 
         List<Integer> slots = new ArrayList<>(inv.getSize());
         for (int i = 0; i < inv.getSize(); i++) slots.add(i);
-        Collections.shuffle(slots, r);
+        Collections.shuffle(slots, random);
 
         int idx = 0;
         for (ItemStack it : drops) {
             if (idx >= slots.size()) break;
             inv.setItem(slots.get(idx++), it);
         }
+    }
+
+    private LootTable pickLootTableFromPool(SkyGridConfig cfg, List<String> pool, Random r) {
+        Map<String, LootTableDef> all = cfg.lootTables();
+        if (all == null || all.isEmpty()) return null;
+
+        List<LootTableDef> defs = new ArrayList<>();
+        for (String name : pool) {
+            LootTableDef def = all.get(name);
+            if (def != null && def.weight() > 0 && def.table() != null) defs.add(def);
+        }
+
+        if (defs.isEmpty()) {
+            for (String name : pool) {
+                LootTableDef def = all.get(name);
+                if (def != null && def.table() != null) return def.table();
+            }
+            LootTableDef def = all.get("overworld");
+            return (def == null) ? null : def.table();
+        }
+
+        int total = 0;
+        for (LootTableDef d : defs) total += Math.max(0, d.weight());
+        if (total <= 0) return defs.getFirst().table();
+
+        int roll = r.nextInt(total) + 1;
+        int acc = 0;
+
+        for (LootTableDef d : defs) {
+            int w = Math.max(0, d.weight());
+            if (w == 0) continue;
+
+            acc += w;
+            if (roll <= acc) return d.table();
+        }
+
+        return defs.getFirst().table();
+    }
+
+    private List<GridEntry> paletteFor(Biome biome, WorldSettings settings) {
+        List<GridEntry> list = settings.biomesMaterial().get(biome);
+        if (list == null || list.isEmpty()) list = settings.biomesMaterial().get(settings.defaultBiome());
+        return list;
+    }
+
+    private List<String> resolveChestLootPool(List<GridEntry> palette, SkyGridConfig cfg, World.Environment env) {
+        if (palette != null) {
+            for (GridEntry e : palette) {
+                if (e != null && e.isChest()) {
+                    List<String> tables = e.lootTables();
+                    if (tables != null && !tables.isEmpty()) return tables;
+                }
+            }
+        }
+        return defaultPoolFor(env);
+    }
+
+    private Map<EntityType, Integer> resolveSpawnerMobs(List<GridEntry> palette) {
+        if (palette == null) return Map.of();
+
+        for (GridEntry e : palette) {
+            if (e != null && e.isSpawner()) {
+                Map<EntityType, Integer> mobs = e.mobWeights();
+                if (mobs != null && !mobs.isEmpty()) return mobs;
+            }
+        }
+        return Map.of();
+    }
+
+    private List<String> defaultPoolFor(World.Environment env) {
+        return switch (env) {
+            case NETHER -> List.of("nether");
+            case THE_END -> List.of("end");
+            default -> List.of("overworld");
+        };
+    }
+
+    private EntityType pickWeightedMob(Map<EntityType, Integer> mobWeights, Random r) {
+        int total = 0;
+        for (int w : mobWeights.values()) total += Math.max(0, w);
+        if (total <= 0) return null;
+
+        int roll = r.nextInt(total) + 1;
+        int acc = 0;
+
+        for (Map.Entry<EntityType, Integer> e : mobWeights.entrySet()) {
+            int w = Math.max(0, e.getValue());
+            if (w == 0) continue;
+
+            acc += w;
+            if (roll <= acc) return e.getKey();
+        }
+        return null;
     }
 
     private WorldSettings getSettings(World world, SkyGridConfig cfg) {

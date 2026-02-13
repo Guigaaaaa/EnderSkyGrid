@@ -1,9 +1,9 @@
 package br.com.enderfy.enderskygrid.generator;
 
 import br.com.enderfy.enderskygrid.config.ConfigManager;
-import br.com.enderfy.enderskygrid.model.SkyGridConfig;
-import org.bukkit.Material;
+import br.com.enderfy.enderskygrid.model.*;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
@@ -24,24 +24,20 @@ public class SkyGridGenerator extends ChunkGenerator {
         SkyGridConfig config = ConfigManager.get();
         if (config == null) return;
 
-        final int spacing = Math.max(1, config.spacing());
+        if (!config.worlds().contains(worldInfo.getName())) return;
+
+        WorldSettings settings = worldSettings(worldInfo, config);
+        int spacing = Math.max(1, settings.spacing());
 
         final int baseX = chunkX << 4;
         final int baseZ = chunkZ << 4;
 
-        final int minY = Math.max(config.minY(), chunkData.getMinHeight());
-        final int maxY = Math.min(config.maxY(), chunkData.getMaxHeight() - 1);
+        final int minY = Math.max(settings.minY(), chunkData.getMinHeight());
+        final int maxY = Math.min(settings.maxY(), chunkData.getMaxHeight() - 1);
         if (minY > maxY) return;
-
-        final List<Material> palette = paletteFor(worldInfo, config);
-        if (palette == null || palette.isEmpty()) return;
-
-        final double chestChance = worldSettings(worldInfo, config).chestChance();
-        final double spawnerChance = worldSettings(worldInfo, config).spawnerChance();
 
         final int xStart = alignToChunk(baseX, spacing);
         final int zStart = alignToChunk(baseZ, spacing);
-
         final int yStart = alignUp(minY, spacing);
 
         for (int x = xStart; x < 16; x += spacing) {
@@ -51,32 +47,51 @@ public class SkyGridGenerator extends ChunkGenerator {
                 final int wz = baseZ + z;
 
                 for (int y = yStart; y <= maxY; y += spacing) {
-                    Random r = seeded(worldInfo.getSeed(), wx, y, wz);
-                    double roll = r.nextDouble();
+                    Biome biome = chunkData.getBiome(x, y, z);
+                    List<GridEntry> palette = paletteFor(biome, settings);
+                    if (palette == null || palette.isEmpty()) continue;
 
-                    if (roll < spawnerChance) {
-                        chunkData.setBlock(x, y, z, Material.SPAWNER);
-                    } else if (roll < spawnerChance + chestChance) {
-                        chunkData.setBlock(x, y, z, Material.CHEST);
-                    } else {
-                        chunkData.setBlock(x, y, z, palette.get(r.nextInt(palette.size())));
-                    }
+                    Random r = seeded(worldInfo.getSeed(), wx, y, wz);
+                    GridEntry picked = pickWeighted(palette, r);
+                    if (picked == null) continue;
+
+                    chunkData.setBlock(x, y, z, picked.material());
                 }
             }
         }
     }
 
-    private static br.com.enderfy.enderskygrid.model.WorldSettings worldSettings(WorldInfo worldInfo, SkyGridConfig cfg) {
-        World.Environment env = worldInfo.getEnvironment();
-        return switch (env) {
+    private static WorldSettings worldSettings(WorldInfo worldInfo, SkyGridConfig cfg) {
+        World.Environment environment = worldInfo.getEnvironment();
+        return switch (environment) {
             case NETHER -> cfg.nether();
             case THE_END -> cfg.end();
             default -> cfg.overworld();
         };
     }
 
-    private static List<Material> paletteFor(WorldInfo worldInfo, SkyGridConfig cfg) {
-        return worldSettings(worldInfo, cfg).materials();
+    private static List<GridEntry> paletteFor(Biome biome, WorldSettings settings) {
+        List<GridEntry> list = settings.biomesMaterial().get(biome);
+        if (list == null || list.isEmpty()) list = settings.biomesMaterial().get(settings.defaultBiome());
+        return list;
+    }
+
+    private static GridEntry pickWeighted(List<GridEntry> entries, Random r) {
+        double total = 0.0;
+        for (GridEntry e : entries) total += Math.max(0.0, e.weight());
+        if (total <= 0) return null;
+
+        double roll = r.nextDouble() * total;
+        double acc = 0.0;
+
+        for (GridEntry e : entries) {
+            double w = Math.max(0.0, e.weight());
+            if (w <= 0) continue;
+
+            acc += w;
+            if (roll <= acc) return e;
+        }
+        return null;
     }
 
     private static int alignToChunk(int base, int spacing) {
@@ -97,10 +112,5 @@ public class SkyGridGenerator extends ChunkGenerator {
         s ^= (z * 132897987541L);
         s ^= (y * 42317861L);
         return new Random(s);
-    }
-
-    @Override
-    public boolean shouldGenerateNoise() {
-        return false;
     }
 }
