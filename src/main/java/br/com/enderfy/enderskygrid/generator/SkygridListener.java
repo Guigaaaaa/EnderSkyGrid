@@ -30,17 +30,19 @@ public class SkygridListener implements Listener {
     public void onChunkLoad(ChunkLoadEvent event) {
         if (!event.isNewChunk()) return;
 
-        SkyGridConfig cfg = ConfigManager.get();
-        if (cfg == null) return;
+        SkyGridConfig config = ConfigManager.get();
+        if (config == null) return;
 
         Chunk chunk = event.getChunk();
         World world = chunk.getWorld();
-        WorldSettings settings = getSettings(world, cfg);
+        WorldSettings settings = getSettings(world, config);
 
-        int spacing = Math.max(1, cfg.spacing());
+        if (!config.worlds().contains(world.getName())) return;
 
-        int minY = Math.max(cfg.minY(), world.getMinHeight());
-        int maxY = Math.min(cfg.maxY(), world.getMaxHeight() - 1);
+        int spacing = Math.max(1, config.spacing());
+
+        int minY = Math.max(config.minY(), world.getMinHeight());
+        int maxY = Math.min(config.maxY(), world.getMaxHeight() - 1);
         if (minY > maxY) return;
 
         int baseX = chunk.getX() << 4;

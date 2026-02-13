@@ -29,19 +29,20 @@ public class ConfigManager {
         int spacing = config.getInt("skygrid.spacing", 4);
         int minY = config.getInt("skygrid.min-y", -64);
         int maxY = config.getInt("skygrid.max-y", 100);
+        List<String> worlds = config.getStringList("skygrid.enabled-worlds");
 
         WorldSettings overworld = loadWorld(config, "skygrid.overworld");
         WorldSettings nether = loadWorld(config, "skygrid.nether");
         WorldSettings end = loadWorld(config, "skygrid.end");
 
-        skygridConfig = new SkyGridConfig(spacing, minY, maxY, overworld, nether, end);
+        skygridConfig = new SkyGridConfig(spacing, minY, maxY, worlds, overworld, nether, end);
     }
 
     private static WorldSettings loadWorld(FileConfiguration c, String path) {
         double chestChance = c.getDouble(path + ".chest.chance", 0.002);
         double spawnerChance = c.getDouble(path + ".spawner.chance", 0.0002);
 
-        LootTable loot = loadLootTable(c, path + ".chest.loot"); // NOVO
+        LootTable loot = loadLootTable(c, path + ".chest.loot");
 
         List<EntityType> mobs = loadMobsSafe(c.getStringList(path + ".spawner.mobs"));
         List<Material> materials = loadMaterialsSafe(c.getStringList(path + ".materials"));

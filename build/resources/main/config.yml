@@ -1,4 +1,8 @@
 skygrid:
+  enabled-worlds:
+    - skygrid
+    - skygrid_nether
+    - skygrid_end
   spacing: 4
   min-y: -64
   max-y: 100
